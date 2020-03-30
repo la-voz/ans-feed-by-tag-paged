@@ -2,9 +2,9 @@
 const schemaName = "ans-feed";
 
 const params = {
-    authorId: "text",
-    feedPage: "number",
-    feedSize: "number"
+  tag: "text",
+  feedPage: "number",
+  feedSize: "number"
 };
 
 /**
@@ -13,19 +13,19 @@ const params = {
  * @return {String} elastic search query for the feed sections
  */
 const pattern = (key = {}) => {
-    const website = key["arc-site"] || "Arc Site is not defined.";
-    const { authorId, feedPage = 1, feedSize } = key;
+  const website = key["arc-site"] || "Arc Site is not defined.";
+  const { tag, feedPage, feedSize } = key;
 
-    const searchPath = "/content/v4/search/published";
+  const searchPath = "/content/v4/search/published";
 
-    const query = [
-        `q=credits.by._id:${encodeURI(authorId)}`,
-        `website=${website}`,
-        `size=${feedSize}`,
-        `from=${(feedPage - 1) * feedSize}`
-    ].join("&");
+  const query = [
+    `q=taxonomy.tags.slug:${encodeURI(tag)}`,
+    `website=${website}`,
+    `size=${feedSize}`,
+    `from=${(feedPage - 1) * feedSize}`
+  ].join("&");
 
-    return `${searchPath}?${query}&sort=display_date:desc`;
+  return `${searchPath}?${query}&sort=display_date:desc`;
 };
 
 /**
@@ -35,13 +35,14 @@ const pattern = (key = {}) => {
  *                  offset
  */
 const resolve = key => {
-    return pattern(key);
+  return pattern(key);
 };
 
 const source = {
-    resolve,
-    schemaName,
-    params
+  resolve,
+  schemaName,
+  params
 };
 
 export default source;
+
